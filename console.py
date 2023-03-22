@@ -73,7 +73,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] is '{' and pline[-1] is'}'\
+                    if pline[0] is '{' and pline[-1] is '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -114,20 +114,38 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        """ Create an object of any class"""
-        if not args:
-            print("** class name missing **")
+        """
+        Create an object of any class
+        - saves it in json file
+        - prints the id
+        - Usage: create <class name>
+
+        """
+
+        if ' ' in args:
+            argv = err_manager(args, 'variadic')
+        else:
+            argv = err_manager(args, 1)
+        if argv == -1:
             return
-        elif args not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
-        new_instance = HBNBCommand.classes[args]()
-        storage.save()
-        print(new_instance.id)
-        storage.save()
+
+        obj = eval(argv[0])()
+
+        if len(argv) != 1:
+            cls = argv[0]
+            all_attributes = argv[1:]
+            for attr in all_attributes:
+                attr = attr.split('=', 1)
+                key, value = attr[0], attr[1]
+                value = type_checker(str(value))
+                if value is not None:
+                    obj.__dict__[key] = value
+
+        obj.save()
+        print(obj.id)
 
     def help_create(self):
-        """ Help information for the create method """
+    """ Help information for the create method """
         print("Creates a class of any type")
         print("[Usage]: create <className>\n")
 
@@ -321,4 +339,4 @@ class HBNBCommand(cmd.Cmd):
         print("Usage: update <className> <id> <attName> <attVal>\n")
 
 if __name__ == "__main__":
-    HBNBCommand().cmdloop()
+     HBNBCommand().cmdloop()
