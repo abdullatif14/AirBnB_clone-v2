@@ -17,11 +17,6 @@ class City(BaseModel, Base):
         places = relationship('Place', backref='cities',
                               cascade='all, delete, delete-orphan')
 
-        def __init__(self, **kwargs):
-            self.id = str(uuid4())
-            for key, value in kwargs.items():
-                setattr(self, key, value)
-
     else:
         name = ''
         state_id = ''
