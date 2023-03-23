@@ -21,6 +21,13 @@ class State(BaseModel, Base):
 
         @property
         def cities(self):
-            all_cities = models.storage.all(City)
-            return [city for city in all_cities.values()
-                    if city.state_id == self.id]
+            """ Returns the list of city
+            instances with same state and current state id"""
+
+            from models import storage
+            related_cities = []
+            cities = storage.all(City)
+            for city in cities.values():
+                if city.state_id == self.id:
+                    related_cities.append(city)
+            return related_cities
